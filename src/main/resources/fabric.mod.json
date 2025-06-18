@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "id": "elytrautils",
+  "version": "${version}",
+  "name": "Elytra Utils",
+  "description": "Optimise elytra experience",
+  "authors": ["CC PCT"],
+  "contact": {
+    "repo": "https://github.com/CCPCT/ElytraUtils"
+  },
+  "license": "GPL-3.0-or-later",
+  "icon": "assets/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "CCPCT.ElytraUtils.client.ElytraUtilsClient",
+      "CCPCT.ElytraUtils.util.Packets"
+    ],
+    "modmenu": [
+      "CCPCT.ElytraUtils.ModMenu.ModMenu"
+    ]
+  },
+  "mixins": [
+    "ElytraUtils.mixin.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}",
+    "java": ">=21",
+    "modmenu": "*",
+    "cloth-config": "*"
+  }
+}

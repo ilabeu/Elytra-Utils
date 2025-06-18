@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "CCPCT.ElytraUtils.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "FireworkOnWall"
+  ],
+  "client": [
+    "RenderOverlay$InGameHudMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
