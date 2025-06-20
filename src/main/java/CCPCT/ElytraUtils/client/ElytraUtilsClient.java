@@ -87,8 +87,8 @@ public class ElytraUtilsClient implements ClientModInitializer {
             jumpKeyDown = client.options.jumpKey.isPressed();
             if (Objects.equals(endFlightKey.getBoundKeyTranslationKey(),"key.keyboard.space")&&(lastGliding && gliding && jumpKeyDown && !lastJumpKeyDown)||endFlightKey.wasPressed()) {
                 Chat.send("Ended flight");
-                Packets.clickItem(6, ItemStack.EMPTY);
-                Packets.clickItem(6, Logic.getItemStack(38));
+                Packets.clickItem(6, ItemStack.EMPTY,true);
+                Packets.clickItem(6, Logic.getItemStack(38),true);
             }
             lastJumpKeyDown = jumpKeyDown;
             lastGliding = gliding;

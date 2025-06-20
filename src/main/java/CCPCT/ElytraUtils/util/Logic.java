@@ -130,13 +130,13 @@ public class Logic {
     public static void quickFirework(){
         PlayerEntity player = MinecraftClient.getInstance().player;
         if (player == null || !player.isGliding()) return;
-        Chat.send("Boosting");
-        if (player.getMainHandStack().getItem() != Items.FIREWORK_ROCKET) {
-            int fireworkSlot = invToProtocolSlot(getItemSpot(Items.FIREWORK_ROCKET), 0);
-            Packets.swapUseItems(fireworkSlot);
-        } else {
-            Packets.useItem();
+        int slot = getItemSpot(Items.FIREWORK_ROCKET);
+        if (slot == -1) {
+            Chat.colour("No firework in inventory!", "red");
+            return;
         }
+        Chat.send("Boosting");
+        Packets.swapUseItems(slot);
     }
 
     public static int getItemCount(Item item){
