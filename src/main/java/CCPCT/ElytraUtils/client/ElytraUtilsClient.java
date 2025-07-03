@@ -8,18 +8,19 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 
+import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 
+import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.util.ActionResult;
 import org.lwjgl.glfw.GLFW;
 
 import CCPCT.ElytraUtils.util.*;
 import CCPCT.ElytraUtils.config.configScreen;
-
-import java.util.Objects;
 
 public class ElytraUtilsClient implements ClientModInitializer {
     public static KeyBinding swapElytraKey;
@@ -82,13 +83,17 @@ public class ElytraUtilsClient implements ClientModInitializer {
             }
 
 
-
             gliding = client.player.isGliding();
             jumpKeyDown = client.options.jumpKey.isPressed();
-            if (Objects.equals(endFlightKey.getBoundKeyTranslationKey(),"key.keyboard.space")&&(lastGliding && gliding && jumpKeyDown && !lastJumpKeyDown)||endFlightKey.wasPressed()) {
+            if (endFlightKey.isDefault()&&(lastGliding && gliding && jumpKeyDown && !lastJumpKeyDown)||endFlightKey.wasPressed()) {
                 Chat.send("Ended flight");
-                Packets.clickItem(6, ItemStack.EMPTY,true);
-                Packets.clickItem(6, Logic.getItemStack(38),true);
+
+                Packets.sendPacket(null,true);
+                Packets.clickItem(6, Logic.getItemStack(6),true);
+                Packets.clickItem(6, ItemStack.EMPTY,false);
+
+
+
             }
             lastJumpKeyDown = jumpKeyDown;
             lastGliding = gliding;
@@ -118,6 +123,20 @@ public class ElytraUtilsClient implements ClientModInitializer {
                     alerted = false;
                 }
             }
+        });
+
+        // special case for armor stands cus its unique
+        UseEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
+            if (entity instanceof ArmorStandEntity &&
+                    world.isClient() &&
+                    player.isGliding() &&
+                    player.getMainHandStack().getItem() == Items.FIREWORK_ROCKET &&
+                    ModConfig.get().disableFireworkOnWall) {
+                Chat.send("Boosted");
+                Packets.useItem(false);
+                return ActionResult.SUCCESS;
+            }
+            return ActionResult.PASS; // allow normal processing
         });
     }
 }

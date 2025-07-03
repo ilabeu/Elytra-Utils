@@ -22,29 +22,30 @@ import net.minecraft.util.Hand;
 
 
 public class Packets implements ClientModInitializer {
-    private static ArrayList<Packet<?>> packetsToSend = new ArrayList<>();
+    private final static ArrayList<Packet<?>> packetsToSend = new ArrayList<>();
 
     @Override
     public void onInitializeClient() {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            if (packetsToSend.isEmpty()){
-                return;
-            }
+            if (packetsToSend.isEmpty()) return;
+
             if (packetsToSend.getFirst() == null){
                 packetsToSend.removeFirst();
                 return;
             }
 
-            sendPacket(packetsToSend.getFirst());
+            sendPacket(packetsToSend.getFirst(),false);
 
             packetsToSend.removeFirst();
         });
     }
 
-    public static void sendPacket(Packet<?> packet) {
+    public static void sendPacket(Packet<?> packet,boolean delay) {
         ClientPlayNetworkHandler networkHandler = MinecraftClient.getInstance().getNetworkHandler();
         if (networkHandler == null) return;
-        networkHandler.sendPacket(packet);
+
+        if (delay) packetsToSend.add(packet);
+        else networkHandler.sendPacket(packet);
     }
 
     //packet methods
@@ -80,6 +81,7 @@ public class Packets implements ClientModInitializer {
             int end = player.getInventory().selectedSlot + 36;
             ItemStack endItem = Logic.getItemStack(end);
 
+            if (startItem==null || endItem == null) return;
             clickItem(start, ItemStack.EMPTY,false);
             clickItem(end, startItem,false);
             useItem(false);
@@ -93,17 +95,6 @@ public class Packets implements ClientModInitializer {
     public static void clickItem(int slot, ItemStack holding, boolean delay) {
         if (MinecraftClient.getInstance().player == null) return;
         ScreenHandler screenHandler = MinecraftClient.getInstance().player.currentScreenHandler;
-        if (delay) {
-            packetsToSend.add(new ClickSlotC2SPacket(
-                    screenHandler.syncId,
-                    screenHandler.getRevision(),
-                    slot,
-                    0,
-                    SlotActionType.PICKUP,
-                    holding,
-                    new Int2ObjectOpenHashMap<>()
-            ));
-        } else {
             sendPacket(new ClickSlotC2SPacket(
                     screenHandler.syncId,
                     screenHandler.getRevision(),
@@ -112,39 +103,25 @@ public class Packets implements ClientModInitializer {
                     SlotActionType.PICKUP,
                     holding,
                     new Int2ObjectOpenHashMap<>()
-            ));
-        }
+            ),delay);
     }
 
     public static void useItem(boolean delay){
         PlayerEntity player = MinecraftClient.getInstance().player;
         if (player == null) return;
-        if (delay) {
-            packetsToSend.add(new PlayerInteractItemC2SPacket(
-                    Hand.MAIN_HAND,
-                    0,
-                    player.getYaw(),
-                    player.getPitch()
-
-            ));
-        } else {
-            sendPacket(new PlayerInteractItemC2SPacket(
-                    Hand.MAIN_HAND,
-                    0,
-                    player.getYaw(),
-                    player.getPitch()
-
-            ));
-        }
+        sendPacket(new PlayerInteractItemC2SPacket(
+                Hand.MAIN_HAND,
+                0,
+                player.getYaw(),
+                player.getPitch()
+        ),delay);
+        Chat.debug(player.getYaw() + " | " + player.getPitch());
     }
 
     public static void selectHotbarSlot(int slot, boolean delay) {
-        // use protocal number
+        // use protocol number
         if (slot < 0 || slot > 8) return; // validate slot
-        if (delay){
-            packetsToSend.add(new UpdateSelectedSlotC2SPacket(slot));
-        } else {
-            sendPacket(new UpdateSelectedSlotC2SPacket(slot));
-        }
+
+        sendPacket(new UpdateSelectedSlotC2SPacket(slot),delay);
     }
 }

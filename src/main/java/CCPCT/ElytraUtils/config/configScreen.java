@@ -34,7 +34,7 @@ public class configScreen extends Screen {
 
         generalTab.addEntry(entryBuilder.startBooleanToggle(Text.literal("Disable Firework on wall"),ModConfig.get().disableFireworkOnWall)
                 .setDefaultValue(true)
-                .setTooltip(Text.literal("Boost instead of placing firework on wall in flight"))
+                .setTooltip(Text.literal("Boost instead of placing firework on wall/ interact with entities in flight"))
                 .setSaveConsumer(newValue -> ModConfig.get().disableFireworkOnWall = newValue)
                 .build());
 

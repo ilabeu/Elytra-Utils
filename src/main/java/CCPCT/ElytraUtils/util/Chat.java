@@ -6,11 +6,11 @@ import net.minecraft.util.Formatting;
 import CCPCT.ElytraUtils.config.ModConfig;
 
 public class Chat {
-    public static void send(String message) {
+    public static <T> void send(T message) {
         if (ModConfig.get().chatfeedback) {
             MinecraftClient client = MinecraftClient.getInstance();
             if (client.player != null) {
-                client.player.sendMessage(Text.literal(message), false);
+                client.player.sendMessage(Text.literal("§7[Elytra Utils]§r "+String.valueOf(message)), false);
             }
         }
     }
@@ -24,11 +24,11 @@ public class Chat {
         }
     }
 
-    public static void debug(String message) {
+    public static <T> void debug(T message) {
         if (ModConfig.get().debug) {
             MinecraftClient client = MinecraftClient.getInstance();
             if (client.player != null) {
-                client.player.sendMessage(Text.literal(message), false);
+                client.player.sendMessage(Text.literal("§7[Debug]§r "+message), false);
             }
         }
     }
